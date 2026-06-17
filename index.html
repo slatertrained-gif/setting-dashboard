@@ -445,10 +445,10 @@ function buildTasks(){
 function makeTaskRow(task,key){
   const done=S.checkedTasks.includes(key);
   const row=document.createElement('div');row.className='task-row';
-  const cb=document.createElement('button');
+  row.style.cursor='pointer';
+  const cb=document.createElement('div');
   cb.className='task-cb'+(done?' done':'');
   cb.textContent=done?'✓':'';
-  cb.addEventListener('click',function(){toggleTask(key,task.xp);});
   const txt=document.createElement('div');
   txt.className='task-txt'+(done?' done':'');
   txt.textContent=task.t;
@@ -456,6 +456,7 @@ function makeTaskRow(task,key){
   xp.className='task-xp';
   xp.textContent=task.xp+'xp';
   row.appendChild(cb);row.appendChild(txt);row.appendChild(xp);
+  row.addEventListener('click',function(){toggleTask(key,task.xp);});
   return row;
 }
 
