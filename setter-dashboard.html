@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Hardline — Setter Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Barlow+Condensed:wght@500;600;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+:root{
+  --bg:#08090D;
+  --s1:#0F1016;
+  --s2:#14151C;
+  --s3:#1A1B24;
+  --border:rgba(255,255,255,0.07);
+  --text:#EEF0FF;
+  --muted:rgba(238,240,255,0.4);
+  --muted2:rgba(238,240,255,0.2);
+  --red:#FF4545;
+  --green:#3DDB7A;
+  --gold:#FFB830;
+  --blue:#4F8EFF;
+  --accent:#FF4545;
+  --hardline:#FF4545;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100dvh;padding-bottom:80px;overscroll-behavior:none;}
+
+/* HEADER */
+.hdr{background:var(--s1);border-bottom:.5px solid var(--border);padding:14px 16px 10px;position:sticky;top:0;z-index:100;}
+.hdr-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;}
+.hdr-brand{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--hardline);}
+.hdr-name{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--text);line-height:1;}
+.hdr-date{font-size:11px;color:var(--muted);margin-top:2px;}
+.hdr-kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;}
+.hk{background:var(--s2);border-radius:9px;padding:7px 8px;border:.5px solid var(--border);text-align:center;}
+.hk-v{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:700;line-height:1;color:var(--text);}
+.hk-l{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:2px;}
+.hk-t{font-size:9px;color:var(--hardline);font-weight:600;}
+
+/* NAV */
+.nav{position:fixed;bottom:0;left:0;right:0;background:var(--s1);border-top:.5px solid var(--border);display:flex;padding:8px 0 max(8px,env(safe-area-inset-bottom));z-index:200;}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:none;color:var(--muted);font-size:9px;font-family:'DM Sans',sans-serif;cursor:pointer;padding:4px 0;}
+.nav-btn.on{color:var(--hardline);}
+.nav-btn i{font-size:20px;}
+
+/* TABS */
+.tc{display:none;padding:14px 14px 0;max-width:480px;margin:0 auto;}
+.tc.on{display:block;}
+
+/* CARDS */
+.gc{background:var(--s2);border-radius:13px;padding:13px 13px 12px;margin-bottom:10px;border:.5px solid var(--border);}
+.lbl{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--hardline);margin-bottom:10px;margin-top:4px;}
+.div{height:.5px;background:var(--border);margin:14px 0;}
+
+/* TASKS */
+.task-row{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:.5px solid var(--border);}
+.task-row:last-child{border-bottom:none;}
+.task-cb{width:20px;height:20px;border-radius:6px;border:1.5px solid var(--border);background:transparent;flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-top:1px;}
+.task-cb.done{background:var(--hardline);border-color:var(--hardline);}
+.task-cb.done::after{content:'✓';color:#fff;font-size:11px;font-weight:700;}
+.task-txt{font-size:13px;line-height:1.45;color:var(--text);flex:1;}
+.task-txt.done{text-decoration:line-through;color:var(--muted);}
+.task-xp{font-family:'Barlow Condensed',sans-serif;font-size:11px;color:var(--hardline);font-weight:600;flex-shrink:0;}
+.blk-lbl{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:12px 0 6px;}
+
+/* PROGRESS BAR */
+.pb-wrap{background:var(--s3);border-radius:6px;height:6px;margin-bottom:4px;overflow:hidden;}
+.pb-fill{height:100%;background:var(--hardline);border-radius:6px;transition:width .4s ease;}
+.pb-row{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:12px;}
+
+/* KPI TRACKER */
+.kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;}
+.kpi-card{background:var(--s3);border-radius:11px;padding:12px;border:.5px solid var(--border);text-align:center;}
+.kpi-val{font-family:'Barlow Condensed',sans-serif;font-size:32px;font-weight:700;line-height:1;color:var(--text);}
+.kpi-lbl{font-size:11px;color:var(--muted);margin-top:3px;}
+.kpi-tgt{font-size:10px;color:var(--hardline);font-weight:600;margin-top:2px;}
+.kpi-ctrl{display:flex;gap:6px;margin-top:8px;justify-content:center;}
+.kpi-btn{background:var(--s2);border:.5px solid var(--border);color:var(--text);font-size:18px;font-family:'DM Sans',sans-serif;width:36px;height:36px;border-radius:9px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:600;}
+.kpi-btn.plus{background:var(--hardline);border-color:var(--hardline);color:#fff;}
+
+/* PIPELINE */
+.lead-row{background:var(--s3);border-radius:11px;padding:11px 12px;margin-bottom:7px;border:.5px solid var(--border);}
+.lead-top{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.lead-handle{font-size:14px;font-weight:600;color:var(--text);flex:1;}
+.lead-status{font-size:10px;font-family:'Barlow Condensed',sans-serif;font-weight:600;letter-spacing:.06em;padding:3px 8px;border-radius:20px;}
+.s-new{background:rgba(79,142,255,0.15);color:var(--blue);}
+.s-convo{background:rgba(255,184,48,0.15);color:var(--gold);}
+.s-booked{background:rgba(61,219,122,0.15);color:var(--green);}
+.s-closed{background:rgba(61,219,122,0.25);color:var(--green);border:.5px solid var(--green);}
+.s-dead{background:rgba(255,69,69,0.1);color:var(--muted);}
+.lead-note{font-size:12px;color:var(--muted);margin-bottom:8px;line-height:1.4;}
+.lead-actions{display:flex;gap:6px;flex-wrap:wrap;}
+.status-chip{font-size:10px;font-family:'Barlow Condensed',sans-serif;font-weight:600;padding:4px 10px;border-radius:20px;border:.5px solid var(--border);background:var(--s2);color:var(--muted);cursor:pointer;letter-spacing:.04em;}
+.status-chip.active{border-color:var(--hardline);color:var(--hardline);}
+
+/* SCRIPTS */
+.script-card{background:var(--s3);border-radius:11px;padding:13px;margin-bottom:8px;border:.5px solid var(--border);}
+.script-title{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:.06em;color:var(--hardline);text-transform:uppercase;margin-bottom:8px;}
+.script-body{font-size:13px;line-height:1.6;color:var(--text);}
+.script-body em{color:var(--gold);font-style:normal;font-weight:600;}
+.copy-btn{margin-top:10px;background:var(--s2);border:.5px solid var(--border);color:var(--muted);font-size:11px;font-family:'DM Sans',sans-serif;padding:6px 14px;border-radius:8px;cursor:pointer;display:flex;align-items:center;gap:5px;}
+.copy-btn:active{background:var(--s3);}
+
+/* CALENDLY */
+.cal-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;background:var(--hardline);border:none;border-radius:13px;color:#fff;font-family:'Syne',sans-serif;font-size:15px;font-weight:700;cursor:pointer;margin-bottom:10px;}
+.cal-btn i{font-size:18px;}
+
+/* INPUTS */
+.inp{background:var(--s3);border:.5px solid var(--border);border-radius:9px;padding:10px 12px;color:var(--text);font-size:13px;font-family:'DM Sans',sans-serif;outline:none;width:100%;}
+.inp:focus{border-color:var(--hardline);}
+.inp::placeholder{color:var(--muted2);}
+.btn{padding:10px 16px;border-radius:9px;border:none;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;}
+.btn-red{background:var(--hardline);color:#fff;}
+.btn-mute{background:var(--s3);color:var(--muted);border:.5px solid var(--border);}
+.btn-green{background:var(--green);color:#06080F;}
+.irow{display:flex;gap:8px;margin-top:8px;}
+.tr-del{background:rgba(255,69,69,0.1);border:.5px solid rgba(255,69,69,0.2);color:var(--red);font-size:13px;font-weight:700;cursor:pointer;padding:4px 9px;flex-shrink:0;border-radius:7px;line-height:1;font-family:'DM Sans',sans-serif;}
+
+/* STATS */
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;}
+.stat-card{background:var(--s3);border-radius:11px;padding:13px;border:.5px solid var(--border);}
+.stat-v{font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:700;color:var(--text);line-height:1;}
+.stat-l{font-size:11px;color:var(--muted);margin-top:3px;}
+.week-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:8px;}
+.wday{text-align:center;}
+.wday-l{font-size:9px;color:var(--muted);margin-bottom:3px;}
+.wday-dot{width:100%;aspect-ratio:1;border-radius:4px;background:var(--s3);}
+.wday-dot.hit{background:var(--hardline);}
+.wday-dot.part{background:rgba(255,69,69,0.3);}
+
+/* TOAST */
+.toast{position:fixed;top:16px;left:50%;transform:translateX(-50%) translateY(-60px);background:var(--s2);border:.5px solid var(--border);border-radius:10px;padding:10px 18px;font-size:13px;font-weight:500;z-index:9999;transition:transform .25s ease;white-space:nowrap;box-shadow:0 4px 24px rgba(0,0,0,.5);}
+.toast.show{transform:translateX(-50%) translateY(0);}
+
+select.inp{appearance:none;}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="hdr">
+  <div class="hdr-top">
+    <div>
+      <div class="hdr-brand">Hardline Coaching</div>
+      <div class="hdr-name">Shay's Dashboard</div>
+      <div class="hdr-date" id="hdr-date"></div>
+    </div>
+    <div style="text-align:right">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;color:var(--muted);letter-spacing:.06em">TODAY'S TARGET</div>
+      <div style="font-family:'Syne',sans-serif;font-size:13px;font-weight:800;color:var(--hardline)">1 CALL · 20 CONVOS</div>
+    </div>
+  </div>
+  <div class="hdr-kpi">
+    <div class="hk"><div class="hk-v" id="h-convos">0</div><div class="hk-l">Convos</div><div class="hk-t">20+</div></div>
+    <div class="hk"><div class="hk-v" id="h-success">0</div><div class="hk-l">Success</div><div class="hk-t">&nbsp;</div></div>
+    <div class="hk"><div class="hk-v" id="h-booked">0</div><div class="hk-l">Booked</div><div class="hk-t">1+</div></div>
+    <div class="hk"><div class="hk-v" id="h-closed">0</div><div class="hk-l">Closed</div><div class="hk-t">&nbsp;</div></div>
+  </div>
+</div>
+
+<!-- TABS -->
+<div id="tab-today" class="tc on">
+  <div class="lbl">Today's tasks</div>
+  <div class="gc" style="padding-bottom:4px">
+    <div class="blk-lbl">Morning</div>
+    <div id="am-tasks"></div>
+    <div class="blk-lbl" style="margin-top:10px">Active hours</div>
+    <div id="pm-tasks"></div>
+  </div>
+  <div style="margin-bottom:8px">
+    <div class="pb-wrap"><div class="pb-fill" id="task-pb" style="width:0%"></div></div>
+    <div class="pb-row"><span id="task-done-lbl">0 of 0 tasks done</span><span id="task-xp-lbl">0 XP</span></div>
+  </div>
+  <div class="gc">
+    <button class="cal-btn" onclick="copyCalendly()"><i class="ti ti-calendar-plus"></i>Copy Calendly link</button>
+    <div style="font-size:11px;color:var(--muted);text-align:center">Send this to every qualified prospect</div>
+  </div>
+  <div class="gc">
+    <div class="lbl">Daily check-in</div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:10px;line-height:1.5">Log your numbers for today before you finish.</div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div style="display:flex;align-items:center;gap:10px"><label style="font-size:13px;width:160px;color:var(--muted)">Conversations started</label><input class="inp" type="number" inputmode="numeric" id="ci-convos" placeholder="0" style="width:80px"></div>
+      <div style="display:flex;align-items:center;gap:10px"><label style="font-size:13px;width:160px;color:var(--muted)">Successful convos</label><input class="inp" type="number" inputmode="numeric" id="ci-success" placeholder="0" style="width:80px"></div>
+      <div style="display:flex;align-items:center;gap:10px"><label style="font-size:13px;width:160px;color:var(--muted)">Calls booked</label><input class="inp" type="number" inputmode="numeric" id="ci-booked" placeholder="0" style="width:80px"></div>
+      <div style="display:flex;align-items:center;gap:10px"><label style="font-size:13px;width:160px;color:var(--muted)">Clients closed</label><input class="inp" type="number" inputmode="numeric" id="ci-closed" placeholder="0" style="width:80px"></div>
+    </div>
+    <button class="btn btn-red" style="width:100%;margin-top:12px" onclick="submitCheckin()">Submit check-in</button>
+  </div>
+</div>
+
+<!-- KPI TAB -->
+<div id="tab-kpi" class="tc">
+  <div class="lbl">Today</div>
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-val" id="kpi-convos">0</div>
+      <div class="kpi-lbl">Conversations started</div>
+      <div class="kpi-tgt">Target: 20+</div>
+      <div class="kpi-ctrl">
+        <button class="kpi-btn" onclick="adjKpi('convos',-1)">−</button>
+        <button class="kpi-btn plus" onclick="adjKpi('convos',1)">+</button>
+      </div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-val" id="kpi-success">0</div>
+      <div class="kpi-lbl">Successful convos</div>
+      <div class="kpi-tgt">&nbsp;</div>
+      <div class="kpi-ctrl">
+        <button class="kpi-btn" onclick="adjKpi('success',-1)">−</button>
+        <button class="kpi-btn plus" onclick="adjKpi('success',1)">+</button>
+      </div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-val" id="kpi-booked">0</div>
+      <div class="kpi-lbl">Calls booked</div>
+      <div class="kpi-tgt">Target: 1+/day</div>
+      <div class="kpi-ctrl">
+        <button class="kpi-btn" onclick="adjKpi('booked',-1)">−</button>
+        <button class="kpi-btn plus" onclick="adjKpi('booked',1)">+</button>
+      </div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-val" id="kpi-closed">0</div>
+      <div class="kpi-lbl">Clients closed</div>
+      <div class="kpi-tgt">&nbsp;</div>
+      <div class="kpi-ctrl">
+        <button class="kpi-btn" onclick="adjKpi('closed',-1)">−</button>
+        <button class="kpi-btn plus" onclick="adjKpi('closed',1)">+</button>
+      </div>
+    </div>
+  </div>
+  <div class="div"></div>
+  <div class="lbl">Monthly totals</div>
+  <div class="kpi-grid">
+    <div class="kpi-card"><div class="kpi-val" id="mkpi-convos">0</div><div class="kpi-lbl">Convos this month</div></div>
+    <div class="kpi-card"><div class="kpi-val" id="mkpi-success">0</div><div class="kpi-lbl">Successful</div></div>
+    <div class="kpi-card"><div class="kpi-val" id="mkpi-booked">0</div><div class="kpi-lbl">Calls booked</div></div>
+    <div class="kpi-card"><div class="kpi-val" id="mkpi-closed">0</div><div class="kpi-lbl">Clients closed</div></div>
+  </div>
+  <div class="gc">
+    <div class="lbl">Conversion rate</div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px">
+        <span style="color:var(--muted)">Convo → Successful</span>
+        <span id="conv-rate1" style="font-weight:600;color:var(--green)">—</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px">
+        <span style="color:var(--muted)">Successful → Booked</span>
+        <span id="conv-rate2" style="font-weight:600;color:var(--green)">—</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px">
+        <span style="color:var(--muted)">Booked → Closed</span>
+        <span id="conv-rate3" style="font-weight:600;color:var(--green)">—</span>
+      </div>
+    </div>
+  </div>
+  <div class="gc">
+    <div class="lbl">This week</div>
+    <div class="week-grid" id="week-grid"></div>
+  </div>
+</div>
+
+<!-- PIPELINE TAB -->
+<div id="tab-pipeline" class="tc">
+  <div class="lbl">Active leads</div>
+  <div id="pipeline-list"></div>
+  <div class="gc">
+    <div class="lbl">Add lead</div>
+    <input class="inp" style="margin-bottom:8px" type="text" id="pl-handle" placeholder="Instagram handle (@username)">
+    <input class="inp" style="margin-bottom:8px" type="text" id="pl-note" placeholder="Notes (where they came from, vibe)">
+    <select class="inp" style="margin-bottom:10px" id="pl-status">
+      <option value="new">New follower / DM not sent</option>
+      <option value="convo">In conversation</option>
+      <option value="booked">Call booked</option>
+      <option value="closed">Closed</option>
+      <option value="dead">Not interested</option>
+    </select>
+    <button class="btn btn-red" style="width:100%" onclick="addLead()">Add to pipeline</button>
+  </div>
+</div>
+
+<!-- SCRIPTS TAB -->
+<div id="tab-scripts" class="tc">
+  <div class="lbl">DM scripts</div>
+
+  <div class="script-card">
+    <div class="script-title">Opener — new follower</div>
+    <div class="script-body">Hey <em>[name]</em> 👊 cheers for the follow. You a tradie? What do you do?</div>
+    <button class="copy-btn" onclick="copyScript(this)"><i class="ti ti-copy" style="font-size:13px"></i> Copy</button>
+  </div>
+
+  <div class="script-card">
+    <div class="script-title">Opener — content engagement</div>
+    <div class="script-body">Hey <em>[name]</em> — saw you commented on the post. Just wanted to reach out. You training at the moment or trying to get started?</div>
+    <button class="copy-btn" onclick="copyScript(this)"><i class="ti ti-copy" style="font-size:13px"></i> Copy</button>
+  </div>
+
+  <div class="script-card">
+    <div class="script-title">Opener — story reply</div>
+    <div class="script-body">Nice one mate, cheers! You in the trades? What's your situation with training at the minute — doing much or just winging it?<br><br><em>(Quick look at their profile will usually tell you)</em><br><em>(Adapt for different stories depending on the CTA)</em></div>
+    <button class="copy-btn" onclick="copyScript(this)"><i class="ti ti-copy" style="font-size:13px"></i> Copy</button>
+  </div>
+
+  <div class="script-card">
+    <div class="script-title">Qualify — problem aware</div>
+    <div class="script-body">Makes sense man. A lot of lads in the trades are in the same boat — long shifts, no structure, diet goes out the window.<br><br>What's the main thing you want to sort — drop body fat, build some size, or just feel better?</div>
+    <button class="copy-btn" onclick="copyScript(this)"><i class="ti ti-copy" style="font-size:13px"></i> Copy</button>
+  </div>
+
+  <div class="script-card">
+    <div class="script-title">Book the call</div>
+    <div class="script-body">Based on what you've said, I think I could genuinely help you. I've lived the life of a tradie, I get the lifestyle.<br><br>I'm going to send you my booking link — it's a free discovery call, no pressure. I'll tell you straight if I can help or not.<br><br>Here's the link 👇</div>
+    <button class="copy-btn" onclick="copyScript(this)"><i class="ti ti-copy" style="font-size:13px"></i> Copy</button>
+  </div>
+
+  <div class="script-card">
+    <div class="script-title">Objection — "I'll think about it"</div>
+    <div class="script-body">Totally get it man. What's the main thing holding you back — is it timing, or something else?<br><br><em>[listen]</em><br><br>The call is free — worst case you get some clarity on what you actually need. Worth 20 mins?</div>
+    <button class="copy-btn" onclick="copyScript(this)"><i class="ti ti-copy" style="font-size:13px"></i> Copy</button>
+  </div>
+
+  <div class="script-card">
+    <div class="script-title">Objection — "How much is it?"</div>
+    <div class="script-body">Depends on what you need — there are a few different options. That's actually what the call is for — Coach will go through everything and make sure it fits your situation.<br><br>Want me to send the link?</div>
+    <button class="copy-btn" onclick="copyScript(this)"><i class="ti ti-copy" style="font-size:13px"></i> Copy</button>
+  </div>
+
+  <div class="script-card">
+    <div class="script-title">Follow-up — no reply (day 3)</div>
+    <div class="script-body">Hey <em>[name]</em> — just checking back in. Did you get a chance to have a look at that link?<br><br>Spots are limited so wanted to make sure you didn't miss out.</div>
+    <button class="copy-btn" onclick="copyScript(this)"><i class="ti ti-copy" style="font-size:13px"></i> Copy</button>
+  </div>
+
+  <div class="div"></div>
+  <div class="lbl">Calendly link</div>
+  <div class="gc">
+    <div style="font-size:12px;color:var(--muted);margin-bottom:10px;word-break:break-all">https://calendly.com/slatertrained/discovery-call-hardline-coaching</div>
+    <button class="cal-btn" onclick="copyCalendly()" style="margin-bottom:0"><i class="ti ti-copy"></i>Copy link</button>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav class="nav">
+  <button class="nav-btn on" data-tab="today" onclick="switchTab(this)"><i class="ti ti-home"></i>Today</button>
+  <button class="nav-btn" data-tab="kpi" onclick="switchTab(this)"><i class="ti ti-chart-bar"></i>KPIs</button>
+  <button class="nav-btn" data-tab="pipeline" onclick="switchTab(this)"><i class="ti ti-users"></i>Pipeline</button>
+  <button class="nav-btn" data-tab="scripts" onclick="switchTab(this)"><i class="ti ti-message"></i>Scripts</button>
+</nav>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const CALENDLY='https://calendly.com/slatertrained/discovery-call-hardline-coaching';
+
+/* STATE */
+const DEFAULT={
+  todayKey:'',
+  kpi:{convos:0,success:0,booked:0,closed:0},
+  monthKpi:{convos:0,success:0,booked:0,closed:0},
+  lastMonth:'',
+  checkedTasks:[],
+  pipeline:[],
+  weekLog:{}, // date -> {convos,booked}
+};
+let S=JSON.parse(localStorage.getItem('hardline-setter')||'null')||{...DEFAULT};
+const todayKey=new Date().toISOString().slice(0,10);
+
+// Daily reset
+if(S.todayKey!==todayKey){
+  S.checkedTasks=[];
+  if(S.todayKey){
+    // archive yesterday into weekLog
+    if(!S.weekLog)S.weekLog={};
+    S.weekLog[S.todayKey]={convos:S.kpi.convos,booked:S.kpi.booked};
+  }
+  S.kpi={convos:0,success:0,booked:0,closed:0};
+  S.todayKey=todayKey;
+}
+
+// Monthly reset
+const thisMonth=new Date().toISOString().slice(0,7);
+if(S.lastMonth&&S.lastMonth!==thisMonth){
+  S.monthKpi={convos:0,success:0,booked:0,closed:0};
+}
+S.lastMonth=thisMonth;
+
+save();
+
+function save(){localStorage.setItem('hardline-setter',JSON.stringify(S));}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function showToast(msg){
+  const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2200);
+}
+
+/* NAV */
+function switchTab(btn){
+  document.querySelectorAll('.tc').forEach(t=>t.classList.remove('on'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('on'));
+  document.getElementById('tab-'+btn.dataset.tab).classList.add('on');
+  btn.classList.add('on');
+}
+
+/* HEADER DATE */
+const days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const now=new Date();
+document.getElementById('hdr-date').textContent=days[now.getDay()]+', '+now.getDate()+' '+months[now.getMonth()];
+
+/* TASKS */
+const TASKS_AM=[
+  {t:'Check DMs — reply to everyone who engaged overnight',xp:10},
+  {t:'Identify 10 new followers or engaged accounts to open a convo with',xp:10},
+  {t:'Check what content goes live today — know the hook so you can ride the inbound',xp:5},
+];
+const TASKS_PM=[
+  {t:'Hit 20 conversations started — DM, story reply, or comment reply',xp:20},
+  {t:'Push every qualified lead to the Calendly link',xp:15},
+  {t:'Follow up all leads who haven\'t replied in 2–3 days',xp:10},
+  {t:'Update pipeline — move statuses, note anything useful',xp:10},
+  {t:'Submit your daily check-in numbers',xp:10},
+];
+
+let allTasks=[];
+
+function buildTasks(){
+  const amEl=document.getElementById('am-tasks');
+  const pmEl=document.getElementById('pm-tasks');
+  amEl.innerHTML='';pmEl.innerHTML='';allTasks=[];
+  TASKS_AM.forEach((task,i)=>{
+    const key='am-'+i;allTasks.push({key,xp:task.xp});
+    amEl.appendChild(makeTaskRow(task,key));
+  });
+  TASKS_PM.forEach((task,i)=>{
+    const key='pm-'+i;allTasks.push({key,xp:task.xp});
+    pmEl.appendChild(makeTaskRow(task,key));
+  });
+  updateProgress();
+}
+
+function makeTaskRow(task,key){
+  const done=S.checkedTasks.includes(key);
+  const row=document.createElement('div');row.className='task-row';
+  row.innerHTML='<div class="task-cb'+(done?' done':'')+'" data-key="'+key+'"></div>'+
+    '<div class="task-txt'+(done?' done':'')+'">'+esc(task.t)+'</div>'+
+    '<div class="task-xp">'+task.xp+'xp</div>';
+  row.querySelector('.task-cb').addEventListener('click',function(){toggleTask(key,task.xp);});
+  return row;
+}
+
+function toggleTask(key,xp){
+  const idx=S.checkedTasks.indexOf(key);
+  if(idx>-1)S.checkedTasks.splice(idx,1); else S.checkedTasks.push(key);
+  save();buildTasks();
+}
+
+function updateProgress(){
+  const total=allTasks.length;
+  const done=allTasks.filter(t=>S.checkedTasks.includes(t.key)).length;
+  const xp=allTasks.filter(t=>S.checkedTasks.includes(t.key)).reduce((a,t)=>a+t.xp,0);
+  const totalXp=allTasks.reduce((a,t)=>a+t.xp,0);
+  document.getElementById('task-pb').style.width=(total?Math.round((done/total)*100):0)+'%';
+  document.getElementById('task-done-lbl').textContent=done+' of '+total+' tasks done';
+  document.getElementById('task-xp-lbl').textContent=xp+' / '+totalXp+' XP';
+}
+
+/* CALENDLY */
+function copyCalendly(){
+  navigator.clipboard.writeText(CALENDLY).then(()=>showToast('Calendly link copied ✓')).catch(()=>{
+    const el=document.createElement('textarea');el.value=CALENDLY;document.body.appendChild(el);el.select();document.execCommand('copy');document.body.removeChild(el);showToast('Link copied ✓');
+  });
+}
+
+/* CHECK-IN */
+function submitCheckin(){
+  const fields=['convos','success','booked','closed'];
+  fields.forEach(f=>{
+    const v=parseInt(document.getElementById('ci-'+f).value)||0;
+    S.kpi[f]=Math.max(S.kpi[f],v);
+    S.monthKpi[f]=(S.monthKpi[f]||0)+Math.max(0,v-S.kpi[f]);
+  });
+  // just set today's values directly
+  S.kpi.convos=parseInt(document.getElementById('ci-convos').value)||S.kpi.convos;
+  S.kpi.success=parseInt(document.getElementById('ci-success').value)||S.kpi.success;
+  S.kpi.booked=parseInt(document.getElementById('ci-booked').value)||S.kpi.booked;
+  S.kpi.closed=parseInt(document.getElementById('ci-closed').value)||S.kpi.closed;
+  fields.forEach(f=>{document.getElementById('ci-'+f).value='';});
+  save();renderKPI();renderHeader();
+  const booked=S.kpi.booked;
+  showToast(booked>0?'Numbers logged 🔥 '+booked+' call'+(booked>1?'s':'')+' booked!':'Numbers logged ✓');
+}
+
+/* KPI */
+function adjKpi(key,delta){
+  S.kpi[key]=Math.max(0,(S.kpi[key]||0)+delta);
+  if(delta>0)(S.monthKpi[key]=(S.monthKpi[key]||0)+delta);
+  save();renderKPI();renderHeader();
+}
+
+function renderKPI(){
+  ['convos','success','booked','closed'].forEach(k=>{
+    document.getElementById('kpi-'+k).textContent=S.kpi[k]||0;
+    document.getElementById('mkpi-'+k).textContent=S.monthKpi[k]||0;
+  });
+  const m=S.monthKpi;
+  const r1=m.convos?Math.round((m.success/m.convos)*100)+'%':'—';
+  const r2=m.success?Math.round((m.booked/m.success)*100)+'%':'—';
+  const r3=m.booked?Math.round((m.closed/m.booked)*100)+'%':'—';
+  document.getElementById('conv-rate1').textContent=r1;
+  document.getElementById('conv-rate2').textContent=r2;
+  document.getElementById('conv-rate3').textContent=r3;
+  renderWeekGrid();
+}
+
+function renderHeader(){
+  ['convos','success','booked','closed'].forEach(k=>{
+    document.getElementById('h-'+k).textContent=S.kpi[k]||0;
+  });
+}
+
+function renderWeekGrid(){
+  const el=document.getElementById('week-grid');el.innerHTML='';
+  const dl=['M','T','W','T','F','S','S'];
+  for(let i=6;i>=0;i--){
+    const d=new Date();d.setDate(d.getDate()-i);
+    const dk=d.toISOString().slice(0,10);
+    const log=S.weekLog[dk]||{};
+    const isToday=dk===todayKey;
+    const hit=isToday?(S.kpi.booked>=1):(log.booked>=1);
+    const part=isToday?(S.kpi.convos>=10&&S.kpi.booked<1):(log.convos>=10&&!log.booked);
+    const wd=document.createElement('div');wd.className='wday';
+    wd.innerHTML='<div class="wday-l">'+dl[6-i]+'</div><div class="wday-dot'+(hit?' hit':part?' part':'')+'"></div>';
+    el.appendChild(wd);
+  }
+}
+
+/* PIPELINE */
+const STATUS_LABELS={new:'New',convo:'In convo',booked:'Booked',closed:'Closed',dead:'Dead'};
+const STATUS_CLASS={new:'s-new',convo:'s-convo',booked:'s-booked',closed:'s-closed',dead:'s-dead'};
+
+function addLead(){
+  const handle=document.getElementById('pl-handle').value.trim();
+  if(!handle){showToast('Enter an Instagram handle');return;}
+  if(!S.pipeline)S.pipeline=[];
+  S.pipeline.unshift({id:'l'+Date.now(),handle,note:document.getElementById('pl-note').value.trim(),status:document.getElementById('pl-status').value,added:todayKey});
+  document.getElementById('pl-handle').value='';
+  document.getElementById('pl-note').value='';
+  save();renderPipeline();showToast(handle+' added to pipeline');
+}
+
+function setStatus(id,status){
+  const lead=(S.pipeline||[]).find(l=>l.id===id);
+  if(lead){lead.status=status;save();renderPipeline();}
+  if(status==='booked'){S.kpi.booked=(S.kpi.booked||0)+1;S.monthKpi.booked=(S.monthKpi.booked||0)+1;save();renderKPI();renderHeader();showToast('Call booked! 🔥');}
+}
+
+function delLead(id){
+  S.pipeline=(S.pipeline||[]).filter(l=>l.id!==id);save();renderPipeline();
+}
+
+function renderPipeline(){
+  const el=document.getElementById('pipeline-list');el.innerHTML='';
+  const list=S.pipeline||[];
+  if(!list.length){el.innerHTML='<div style="font-size:13px;color:var(--muted);padding:4px 0 10px">No leads yet. Add one below.</div>';return;}
+  const order=['booked','convo','new','closed','dead'];
+  const sorted=[...list].sort((a,b)=>order.indexOf(a.status)-order.indexOf(b.status));
+  sorted.forEach(l=>{
+    const card=document.createElement('div');card.className='lead-row';
+    card.innerHTML='<div class="lead-top">'+
+      '<div class="lead-handle">'+esc(l.handle)+'</div>'+
+      '<div class="lead-status '+STATUS_CLASS[l.status]+'">'+STATUS_LABELS[l.status]+'</div>'+
+      '<button class="tr-del" data-del="'+l.id+'">×</button>'+
+    '</div>'+
+    (l.note?'<div class="lead-note">'+esc(l.note)+'</div>':'')+
+    '<div class="lead-actions">'+
+      ['new','convo','booked','closed','dead'].map(s=>
+        '<button class="status-chip'+(l.status===s?' active':'')+'" data-st="'+s+'" data-id="'+l.id+'">'+STATUS_LABELS[s]+'</button>'
+      ).join('')+
+    '</div>';
+    card.querySelector('[data-del]').addEventListener('click',function(){delLead(l.id);});
+    card.querySelectorAll('[data-st]').forEach(b=>b.addEventListener('click',function(){setStatus(l.id,this.dataset.st);}));
+    el.appendChild(card);
+  });
+}
+
+/* SCRIPTS */
+function copyScript(btn){
+  const body=btn.closest('.script-card').querySelector('.script-body');
+  const text=body.innerText;
+  navigator.clipboard.writeText(text).then(()=>showToast('Script copied ✓')).catch(()=>{
+    const el=document.createElement('textarea');el.value=text;document.body.appendChild(el);el.select();document.execCommand('copy');document.body.removeChild(el);showToast('Copied ✓');
+  });
+}
+
+/* BOOT */
+buildTasks();
+renderKPI();
+renderHeader();
+renderPipeline();
+</script>
+</body>
+</html>
